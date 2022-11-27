@@ -35,7 +35,6 @@ class VideoCut:
             self.count_clip +=1
             t_start = t_end
             t_end += self.length_clip
-            flag -= self.length_clip
             print('\n')
         if flag > 4:
             cl.subclip(t_start).resize(width = self.width_clip).write_videofile(f'newclip{self.count_clip}.mp4', fps=self.fps)
@@ -44,5 +43,5 @@ class VideoCut:
                   
 
 if __name__ == '__main__':
-    clips = ('v3.mp4',)
+    clips = ('v1.mp4', 'v2.mp4','v3.mp4')
     VideoCut(clips)
