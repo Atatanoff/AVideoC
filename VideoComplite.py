@@ -2,15 +2,16 @@ from VideoCut import *
 from config import *
 from random import choice
 from moviepy.editor import concatenate_videoclips
-from shutil import copyfile
+
 
 
 # функция рандомно выбирающая num_files клипов из папки res\clip и нарезающая клипы длительностью dur и шириной width
-def cutClips(num_files, dur=10, width=480):
+def cutClips(num_files, width=480, dur=10):
     list_use = []
     i = 0
+
     while i < num_files:
-        name_clip = choice(os.listdir(dir_video))
+        name_clip = choice(listdir(dir_video))
         if name_clip in used_list:
             continue
         else:
@@ -18,7 +19,8 @@ def cutClips(num_files, dur=10, width=480):
             list_use.append(dir_video + name_clip)
             used_list.append(name_clip)
     
-    VideoCut(list_use, dur, width)
+    VideoCut(list_use, width, dur)
+    used_list = []
 
 def choiceClip(list_file: list, last_clip):
     while True:
@@ -30,22 +32,25 @@ def choiceClip(list_file: list, last_clip):
         list_file.remove(clip)
     return clip
 
-def recClips(cl1, cl2):
-    with VideoFileClip(cl1) as cl1, VideoFileClip(cl2) as cl2:
-        concatenate_videoclips([cl1, cl2]).write_videofile('out\\outclip.mp4')
-
-
-def compClips():
+def compClips(lf, lc, lVFC):
+    if lf:    
+        file = choiceClip(lf, lc)
+        lc = file
+        with VideoFileClip(dir_temp+file) as clip:
+            lVFC.append(clip)
+            compClips(lf, lc, lVFC)
+    else:
+        concatenate_videoclips(lVFC).write_videofile(dir_out+out_clip)
+    
+    
+def main():
     last_clip = ''
     list_file = listdir(dir_temp)
-    copy_file = choiceClip(list_file, last_clip)
-    copyfile(f'{dir_temp+copy_file}', f'{dir_out+out_clip}')
-    while list_file:
-        append_clip = choiceClip(list_file, last_clip)
-        last_clip = append_clip
-        recClips(dir_out+out_clip, dir_temp+append_clip)
+    list_VFC = []
+    compClips(list_file, last_clip, list_VFC)
         
-      
+
+       
 if __name__ == '__main__':
-    compClips()
+    main()
     
