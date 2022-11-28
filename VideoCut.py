@@ -37,7 +37,7 @@ class VideoCut:
             t_start = t_end
             t_end += self.length_clip
             print('\n')
-        if flag > 4:
+        if flag-t_start > 4:
             cl.subclip(t_start).resize(width = self.width_clip).write_videofile(f'temp//newclip{self.count_clip}.mp4', fps=self.fps)
             self.count_clip +=1
             print('\n')

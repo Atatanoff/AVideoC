@@ -29,6 +29,8 @@ def choiceClip(list_file: list):
         list_file.remove(clip)
     return clip
 
+
+
 def compClips():
     list_file = os.listdir('temp\\')
     out_clip = choiceClip(list_file)
