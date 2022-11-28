@@ -1,5 +1,5 @@
 from moviepy.editor import VideoFileClip
-import os
+from os import mkdir, listdir
 
 #************************************************************************#
 #       VideoCut класс для нарезки кусочков из видеозаготовок            #
@@ -43,8 +43,8 @@ class VideoCut:
             print('\n')
     
     def is_dir(self):  #проверка и создание папки темп
-        if 'temp' not in os.listdir():
-            os.makedirs('temp')
+        if 'temp' not in listdir():
+            mkdir('temp')
                   
 
 if __name__ == '__main__':
