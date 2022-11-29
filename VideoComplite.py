@@ -1,7 +1,7 @@
 from VideoCut import *
 from config import *
 from random import choice
-from moviepy.editor import concatenate_videoclips
+from moviepy.editor import CompositeVideoClip, vfx
 
 
 
@@ -28,19 +28,22 @@ def choiceClip(list_file: list, last_clip):
         if clip != last_clip:
             break
     file_dict[clip] = file_dict.get(clip, 0) + 1
-    if file_dict[clip]==3:
+    if file_dict[clip]==add_n_clip:
         list_file.remove(clip)
     return clip
 
-def compClips(lf, lc, lVFC):
+def compClips(lf, lc, lVFC,start=0):
     if lf:    
         file = choiceClip(lf, lc)
         lc = file
+        mirror = 1 if file_dict.get(file,0) == 2 else 0 
         with VideoFileClip(dir_temp+file) as clip:
-            lVFC.append(clip)
-            compClips(lf, lc, lVFC)
+            if mirror:
+                clip = clip.fx(vfx.mirror_x)
+            lVFC.append(clip.set_start(start).crossfadein(1))
+            compClips(lf, lc, lVFC,start+clip.duration-1)
     else:
-        concatenate_videoclips(lVFC).write_videofile(dir_out+out_clip)
+        CompositeVideoClip(lVFC).write_videofile(dir_out+out_clip)
     
     
 def main():
