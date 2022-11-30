@@ -33,19 +33,6 @@ def choiceClip(list_file: list, last_clip):
         list_file.remove(clip)
     return clip
 
-def compClips(lf, lc, lVFC,start=0):
-    if lf:    
-        file = choiceClip(lf, lc)
-        lc = file
-        mirror = 1 if file_dict.get(file,0) == 2 else 0 
-        with VideoFileClip(dir_temp+file) as clip:
-            if mirror:
-                clip = clip.fx(vfx.mirror_x)
-            lVFC.append(clip.set_start(start).crossfadein(1))
-            compClips(lf, lc, lVFC,start+clip.duration-1)
-    else:
-        CompositeVideoClip(lVFC).write_videofile(dir_out+out_clip)
-
 def choice_wav(la):
     play_name = choice(la)
     la.remove(play_name)
@@ -61,17 +48,30 @@ def make_wav(len_clip):
     play = play[:len_clip-1000]
     play = play.fade_out(3000)
     play.export(dir_out+out_audio, format='mp3')
-      
+          
+def compClips(lf, lc, lVFC,start=0):
+    if lf:    
+        file = choiceClip(lf, lc)
+        lc = file
+        mirror = 1 if file_dict.get(file,0) == 2 else 0 
+        with VideoFileClip(dir_temp+file) as clip:
+            if mirror:
+                clip = clip.fx(vfx.mirror_x)
+            lVFC.append(clip.set_start(start).crossfadein(1))
+            compClips(lf, lc, lVFC,start+clip.duration-1)
+    else:
+        final_clip = CompositeVideoClip(lVFC)
+        len_clip = final_clip.duration*1000
+        make_wav(len_clip)
+        final_audio = AudioFileClip(dir_out+out_audio)
+        final_clip.set_audio(final_audio).write_videofile(dir_out+out_clip)
+
 def main():
-    #last_clip = ''
-    #list_file = listdir(dir_temp)
-    #list_VFC = []
-    #compClips(list_file, last_clip, list_VFC)
-    final_video = VideoFileClip(dir_out+out_clip)
-    len_clip = final_video.duration*1000
-    make_wav(len_clip)
-    final_audio = AudioFileClip(dir_out+out_audio)
-    final_video.set_audio(final_audio).write_videofile(dir_out+out_clip)
+    last_clip = ''
+    list_file = listdir(dir_temp)
+    list_VFC = []
+    compClips(list_file, last_clip, list_VFC)
+    
 
        
 if __name__ == '__main__':
