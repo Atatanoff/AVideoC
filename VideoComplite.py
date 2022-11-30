@@ -3,25 +3,36 @@ from config import *
 from random import choice
 from moviepy.editor import CompositeVideoClip, vfx, AudioFileClip
 from pydub import AudioSegment
+from pymediainfo import MediaInfo
 
 
 #предусмотреть увелечение рекурсии в compClips
 # функция рандомно выбирающая num_files клипов из папки res\clip и нарезающая клипы длительностью dur и шириной width
-def cutClips(num_files, width=480, dur=10):
-    list_use = []
-    i = 0
 
-    while i < num_files:
+def get_track_len(file_path):
+    media_info = MediaInfo.parse(file_path)
+    for track in media_info.tracks:
+        if track.track_type == "Video":
+            return int(track.duration)
+    return 0
+
+def cutClips(all_time, width=480, dur=10):
+    all_time=((all_time*60)/add_n_clip)*1000
+    used_list = [] # список для хранения имен исползованных видеофайлов
+    list_use = []
+    time_clips = 0
+
+    while time_clips < all_time:
         name_clip = choice(listdir(dir_video))
         if name_clip in used_list:
             continue
         else:
-            i += 1
+            time_clips += get_track_len(dir_video+name_clip)
             list_use.append(dir_video + name_clip)
             used_list.append(name_clip)
     
     VideoCut(list_use, width, dur)
-    used_list = []
+    
 
 def choiceClip(list_file: list, last_clip):
     while True:
@@ -67,6 +78,7 @@ def compClips(lf, lc, lVFC,start=0):
         final_clip.set_audio(final_audio).write_videofile(dir_out+out_clip)
 
 def main():
+    cutClips(20, 1920)
     last_clip = ''
     list_file = listdir(dir_temp)
     list_VFC = []
