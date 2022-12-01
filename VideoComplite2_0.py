@@ -35,7 +35,7 @@ def cutClips(all_time, width=480, dur=10):
     
 
 def choiceClip(list_file: list, last_clip): # случайна выборка из списка имен файлов
-                                             # с счётчиком многоразовой выборки add_n_clip
+                                            # с счётчиком многоразовой выборки add_n_clip    
     while True:
         clip = choice(list_file)
         if clip != last_clip:
@@ -50,7 +50,7 @@ def choice_wav(la): #случайная выборка из списка имё�
     la.remove(play_name)
     return dir_audio+play_name
 
-def make_wav(len_clip): # монтаж аудиодорожки для выходного файла
+def make_wav(len_clip): # монтаж аудиодорожки для выходного файла 
     list_mp3 = listdir(dir_audio)
     play = AudioSegment.from_mp3(choice_wav(list_mp3)).fade_in(3000)
     len_play = len(play)
