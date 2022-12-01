@@ -1,9 +1,9 @@
-from VideoCut import *
 from config import *
 from random import choice
-from moviepy.editor import CompositeVideoClip, vfx, AudioFileClip
+from moviepy.editor import CompositeVideoClip, vfx, AudioFileClip, VideoFileClip
 from pydub import AudioSegment
 from pymediainfo import MediaInfo
+from os import listdir
 
 
 #предусмотреть увелечение рекурсии в compClips
@@ -33,6 +33,37 @@ def cutClips(all_time, width=480, dur=10):
     
     VideoCut(list_use, width, dur)
     
+class VideoFile:
+    def __init__(self, vf: VideoFileClip) -> None:
+        self.videofile = vf
+        self.next_videofile = None
+    
+
+class ListVideoFiles:
+    def __init__(self) -> None:
+        self.start_file: VideoFile = None
+        self.focus_file: VideoFile = None
+    
+    def add(self, file: VideoFileClip): # загрузка файла в список
+        if self.focus_file:
+            self.focus_file.next_videofile = VideoFile(file)
+            self.focus_file = self.focus_file.next_videofile
+        else:
+            self.start_file = file
+            self.focus_file = file
+    
+    def get_file(self): # получение файла из списка
+        return_file = self.focus_file.videofile
+        if self.focus_file.next_videofile:
+            self.focus_file = self.focus_file.next_videofile
+        else:
+            self.focus_file = self.start_file
+        return return_file
+                
+    def close_files(self): # закрытие всех файлов
+        self.focus_file = self.start_file
+
+
 
 def choiceClip(list_file: list, last_clip): # случайна выборка из списка имен файлов
                                             # с счётчиком многоразовой выборки add_n_clip    
@@ -45,10 +76,10 @@ def choiceClip(list_file: list, last_clip): # случайна выборка и
         list_file.remove(clip)
     return clip
 
-def choice_wav(la): #случайная выборка из списка имён аудиофайлов
-    play_name = choice(la)
-    la.remove(play_name)
-    return dir_audio+play_name
+def choice_file(la): # случайная выборка из списка
+    file_name = choice(la)
+    la.remove(file_name)
+    return file_name
 
 def make_wav(len_clip): # монтаж аудиодорожки для выходного файла 
     list_mp3 = listdir(dir_audio)
@@ -61,29 +92,16 @@ def make_wav(len_clip): # монтаж аудиодорожки для выхо�
     play = play.fade_out(3000)
     play.export(dir_out+out_audio, format=format_audio)
           
-def compClips(lf, lc, lVFC,start=0):
-    if lf:    
-        file = choiceClip(lf, lc)
-        lc = file
-        mirror = 1 if file_dict.get(file,0) == 2 else 0 
-        with VideoFileClip(dir_temp+file) as clip:
-            if mirror:
-                clip = clip.fx(vfx.mirror_x)
-            lVFC.append(clip.set_start(start).crossfadein(crossfadein))
-            compClips(lf, lc, lVFC,start+clip.duration-1)
-    else:
-        final_clip = CompositeVideoClip(lVFC)
-        len_clip = final_clip.duration*1000
-        make_wav(len_clip)
-        final_audio = AudioFileClip(dir_out+out_audio)
-        final_clip.set_audio(final_audio).write_videofile(dir_out+out_clip)
+def create_lib_video(): # создание списка ресурсных видео
+    list_file = listdir(dir_temp)
+    open_files = ListVideoFiles()
+    for _ in range(len(list_file)):
+        file_path = dir_temp + choice_file(list_file)
+        open_files.add(VideoFileClip(file_path))
+    return open_files
 
 def main():
-    cutClips(20, 1920)
-    last_clip = ''
-    list_file = listdir(dir_temp)
-    list_VFC = []
-    compClips(list_file, last_clip, list_VFC)
+    list_open_files = create_lib_video()
     
 
        

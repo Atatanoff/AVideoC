@@ -10,7 +10,8 @@ file_dict = {} # счетчик использования фрагментов 
 out_clip='outclip.mp4'
 out_audio = 'out.mp3'
 add_n_clip = 3
-
+duraion_out_clip = 20 # длина выходного клипа в минутах
+width_out_clip = 1920# ширина выходного аудиоклипа
 
 if __name__ == '__main__':
     pass
