@@ -70,7 +70,7 @@ def compClips(lf, lc, lVFC,start=0):
             if mirror:
                 clip = clip.fx(vfx.mirror_x)
             lVFC.append(clip.set_start(start).crossfadein(crossfadein))
-            compClips(lf, lc, lVFC,start+clip.duration-1)
+            compClips(lf, lc, lVFC,start+clip.duration-crossfadein)
     else:
         final_clip = CompositeVideoClip(lVFC)
         len_clip = final_clip.duration*1000
