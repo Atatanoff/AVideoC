@@ -15,7 +15,55 @@ def get_track_len(file_path): #функция возвращающая длин�
         if track.track_type == "Video":
             return int(track.duration)
     return 0
-                 
+   
+class Temp:# временный класс для проверки, потом удалть
+    def __init__(self, name) -> None:
+        self.name = name
+        self.sub = ''
+        self.width = 0
+        self.duration = get_track_len(name)/1000
+    def close(self):
+        print(f'{self.name} меня закрыли')
+    def subclip(self,s,e):
+        self.sub = f'[{s}:{e}]'
+    def resize(self, w):
+        self.width = w
+    
+
+class VideoFile: # класс для хранения объектов связанного списка
+    def __init__(self, vf: VideoFileClip) -> None:
+        self.videofile = vf
+        self.next_videofile = None
+    
+class ListVideoFiles:# связанный список
+    def __init__(self) -> None:
+        self.start_file: VideoFile = None
+        self.focus_file: VideoFile = None
+    
+    def add(self, file: VideoFileClip): # загрузка файла в список
+        file = VideoFile(file)
+        if self.focus_file:
+            self.focus_file.next_videofile = file
+            self.focus_file = self.focus_file.next_videofile
+        else:
+            self.start_file = file
+            self.focus_file = file
+    
+    def get_file(self): # получение файла из списка
+        return_file = self.focus_file.videofile
+        if self.focus_file.next_videofile:
+            self.focus_file = self.focus_file.next_videofile
+        else:
+            self.focus_file = self.start_file
+        return return_file
+                
+    def close_files(self): # закрытие всех файлов
+        self.focus_file = self.start_file
+        self.start_file = None
+        while self.focus_file:
+            self.get_file().close()
+        print('все файлы закрыты')
+            
 def choice_file(la): # случайная выборка из передаваемого списка
     file_name = choice(la)
     la.remove(file_name)
@@ -49,7 +97,7 @@ def main():
     try:
         file = list_open_files.get_file()
         t_start = randint(0, int(file.duration)-10)
-        clip = CompositeVideoClip()
+        print(f'{file.name} длина = {file.duration} t_start = {t_start}')
             
     except Exception as e:
         
