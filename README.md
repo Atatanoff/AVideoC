@@ -1,3 +1,4 @@
+[redme.odt](https://github.com/Atatanoff/moviepy/files/10147421/redme.odt)
 # moviepy
 
 Петпроект по нарезке видеоклипов составленных случайным образом из кусочков с наложением музыки.
