@@ -2,7 +2,6 @@ from config import *
 from random import choice, randint
 from moviepy.editor import CompositeVideoClip, vfx, AudioFileClip, VideoFileClip
 from pydub import AudioSegment
-from pymediainfo import MediaInfo
 from os import listdir
 from time import time
 
@@ -10,15 +9,6 @@ from time import time
 #предусмотреть увелечение рекурсии в compClips
 # функция рандомно выбирающая num_files клипов из папки res\clip и нарезающая клипы длительностью dur и шириной width
 t = time()
-
-def get_track_len(file_path): #функция возвращающая длину видефайла в милисекундах
-    media_info = MediaInfo.parse(file_path)
-    
-    for track in media_info.tracks:
-        if track.track_type == "Video":
-            return int(track.duration)
-    
-    return 0
                  
 def choice_file(la): # случайная выборка из передаваемого списка
     file_name = choice(la)
